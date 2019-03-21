@@ -1,4 +1,4 @@
--- lineH perfect
+-- Pixel perfect pour Love2D
 love.graphics.setDefaultFilter("nearest")
 -------------------------------------------------------------------------------
 cube10 = {}
