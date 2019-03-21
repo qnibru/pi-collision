@@ -1,4 +1,4 @@
--- Pixel perfect pour Love2D
+-- lineH perfect
 love.graphics.setDefaultFilter("nearest")
 -------------------------------------------------------------------------------
 cube10 = {}
@@ -29,6 +29,9 @@ clack = love.audio.newSource("assets/clack.wav", "static")
 
 collide = false
 collideCube = false
+clackSound = false
+
+pi = 0
 
 
 function demarre ()
@@ -41,8 +44,10 @@ function demarre ()
     -- Position du cube100
     cube100.x = (widthScreen/10) * 5
     cube100.y = (heightScreen/10) * 7 - cube10.width
-    cube100.v = -1
-    cube100.m = 10000
+    cube100.v = -5
+    cube100.m = 1000
+
+    pi = 0
 
 end
 
@@ -96,20 +101,17 @@ function love.update ()
         local sumM = m1 + m2
 
         -- Energie cinétique de cube10 après transfert/reception
-        v1 = (m1-m2) / sumM * u1
-        v1 = v1 + 2*m2 / sumM * u2
+        v1 = ((m1-m2) / sumM * u1) + (2*m2 / sumM * u2)
         cube10.v = v1
 
         -- Energie cinétique de cube100 après transfert/reception
-        v2 = 2*m1 / sumM * u1
-        v2 = v2 + (m2-m1) / sumM * u2
+        v2 = (2*m1 / sumM * u1) + ((m2-m1) / sumM * u2)
         cube100.v = v2
 
-        love.audio.play(clack)
-        love.audio.play(clack)
-        love.audio.play(clack)
+        love.audio.stop(clack)
         love.audio.play(clack)
 
+        pi = pi + 1
         
         collideCube = true
 
@@ -124,12 +126,18 @@ function love.update ()
         cube10.x = lineV.x + lineV.width
         cube10.v =  -cube10.v
 
+        love.audio.stop(clack)
         love.audio.play(clack)
+
+        pi = pi + 1
+
         collide = true
     else 
         collide = false
         collideCube = false
     end
+
+    
 
 
 end
@@ -150,6 +158,8 @@ function love.draw()
 
     love.graphics.print({black, "Vitesse cube100 : ",cube100.v}, 100, 5)
     love.graphics.print({black, "Vitesse cube10 : ",cube10.v}, 100, 20)
+
+    love.graphics.print({black, "pi : ",pi}, 500, 20)
 
     if collide == true then
         love.graphics.print({black, "collision avec le mur"}, 300, 5)
