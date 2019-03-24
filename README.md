@@ -1,6 +1,7 @@
 # pi-collision
 Petit programme en lua et Love2D qui compte les décimales de pi avec les collisions de 2 cubes. 
-Totalement inspiré par cette vidéo : youtu.be/HEfHFsfGXjs
+Totalement inspiré par cette vidéo : 
+https://youtu.be/HEfHFsfGXjs
 
 À chaque clack entendu, on ajoute +1 à un compteur.
 Quand les 2 cubes ne peuvent plus collisioner, le compteur affichera "3,14...".
