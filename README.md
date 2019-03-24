@@ -6,7 +6,7 @@ https://youtu.be/HEfHFsfGXjs
 À chaque clack entendu, on ajoute +1 à un compteur.
 Quand les 2 cubes ne peuvent plus collisioner, le compteur affichera "3,14...".
 
-Le nombre de collisions, et donc de décimales dépend de la masse du gros cube. Plus elle est importante, plus son inertie augmentera.
+Le nombre de collisions, et donc de décimales dépend de la masse du gros cube (qui doit être une puissance de 100). Le nombre de décimales est égal à la puissance de 100 qu'on choisit. Par exmeple, pour trouver 3 décimales, on mettra la masse du cube à 100^3.
 On considère la collision "élastique" (https://en.wikipedia.org/wiki/Elastic_collision), donc qu'il n'y a aucune perte d'énergie, comme par exemple de la friction avec le sol ou l'air.
 
 La formule qui correspond aux vitesses des 2 cubes après collision est la suivante :
