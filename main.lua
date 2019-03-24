@@ -1,13 +1,14 @@
--- lineH perfect
+-- Pixel perfect
 love.graphics.setDefaultFilter("nearest")
 -------------------------------------------------------------------------------
 cube10 = {}
     cube10.x = 0
     cube10.y = 0
+    cube10.ox = 0
     cube10.v = 0
     cube10.m = 0
     cube10.img = love.graphics.newImage("assets/10.png")
-    
+   
 cube100 = {}
     cube100.x = 0
     cube100.y = 0
@@ -27,40 +28,46 @@ lineV = {}
 
 clack = love.audio.newSource("assets/clack.wav", "static")
 
+start = false
+power100 = 1
 collide = false
-collideCube = false
-clackSound = false
-
 pi = 0
+
 
 
 function demarre ()
     -- Position du cube10
-    cube10.x = (widthScreen/10) * 2
+    cube10.x = (widthScreen/10) * 4
     cube10.y = (heightScreen/10) * 7
     cube10.v = 0
     cube10.m = 1
 
     -- Position du cube100
-    cube100.x = (widthScreen/10) * 5
+    cube100.x = (widthScreen/10) * 7
     cube100.y = (heightScreen/10) * 7 - cube10.width
-    cube100.v = -5
-    cube100.m = 1000
-
+    cube100.v = 0
+    
+    start = false
     pi = 0
-
+    timeSteps = 10
 end
 
 
-function love.load()
 
+
+
+function love.load()
     -- Dimensions écran
     widthScreen = love.graphics.getWidth()
     heightScreen = love.graphics.getHeight()
 
     -- Dimensions des cubes
     cube10.width = cube10.img:getWidth()
+    cube10.ox = cube10.ox + cube10.width
+
     cube100.width = cube100.img:getWidth()
+    
+
 
     -- Position de la ligne horizontale
     lineH.y = (heightScreen/10) * 7 + cube10.width
@@ -70,7 +77,8 @@ function love.load()
     lineV.width = lineV.img:getWidth()
 
     demarre()
-    
+
+    cube100.v = -5
 end
 
 
@@ -79,67 +87,74 @@ end
 
 function love.update ()
 
-    -- Determine la vitesse des cubes
-    --if love.keyboard.isDown("space") then
-        cube10.x = cube10.x + cube10.v
-        cube100.x = cube100.x + cube100.v
-    --end
+    function love.keypressed(key)
+        if key == "up" then
+            power100 = power100 + 1
+
+        elseif key == "down" then
+            power100 = power100 - 1
+            
+        elseif key == "space" or " " then
+            start = true
+        end
+    end
+
+    cube100.m = 100^power100
 
     if love.keyboard.isDown("f") then
         demarre()
     end
+        
+    if start == true then
+        cube10.x = cube10.x + cube10.v
+        cube100.x = cube100.x + cube100.v
+    end
 
-    if cube100.x <= cube10.x + cube10.width then
-
-        -- Collision de cube100 avec cube10
+    
+    -- Collision de cube100 avec cube10
+    if cube100.x <= cube10.x + 1 then
         local v1 = nil
         local v2 = nil
         local u1 = cube10.v
         local u2 = cube100.v
         local m1 = cube10.m
         local m2 = cube100.m
-        local sumM = m1 + m2
 
         -- Energie cinétique de cube10 après transfert/reception
-        v1 = ((m1-m2) / sumM * u1) + (2*m2 / sumM * u2)
+        v1 = u1*((m1-m2) / (m1 + m2)) + u2*((2*m2) / (m1 + m2))
         cube10.v = v1
 
         -- Energie cinétique de cube100 après transfert/reception
-        v2 = (2*m1 / sumM * u1) + ((m2-m1) / sumM * u2)
+        v2 = u1*((2*m1) / (m1 + m2)) + u2*((m2-m1) / (m1 + m2))
         cube100.v = v2
+    end
+
+
+    -- Collisions entre cubes
+    if cube100.x <= cube10.x +1 then
+        cube100.x = cube10.x +1
 
         love.audio.stop(clack)
         love.audio.play(clack)
+      
+        collide = true
 
-        pi = pi + 1
-        
-        collideCube = true
-
-    end
-
-        
-    -- Collisions entre cube et murs
-    if cube100.x <= cube10.x + cube10.width then
-        cube100.x = cube10.x + cube10.width
-
-    elseif cube10.x < lineV.x then
-        cube10.x = lineV.x + lineV.width
+    -- Collision cube10 avec mur
+    elseif cube10.x - cube10.width <= lineV.x + lineV.width then
+        cube10.x = lineV.x + lineV.width + cube10.width
         cube10.v =  -cube10.v
 
         love.audio.stop(clack)
         love.audio.play(clack)
 
-        pi = pi + 1
-
         collide = true
     else 
         collide = false
-        collideCube = false
     end
 
-    
-
-
+    if collide == true then
+        pi = pi + 1
+    end
 end
 
 
@@ -150,7 +165,7 @@ function love.draw()
     love.graphics.draw(lineH.img, lineH.x, lineH.y)
     love.graphics.draw(lineV.img, lineV.x, lineV.y)
 
-    love.graphics.draw(cube10.img, cube10.x, cube10.y)
+    love.graphics.draw(cube10.img, cube10.x, cube10.y, 0, 1, 1, cube10.ox)
     love.graphics.draw(cube100.img, cube100.x, cube100.y)
 
     -- Debug
@@ -158,12 +173,13 @@ function love.draw()
 
     love.graphics.print({black, "Vitesse cube100 : ",cube100.v}, 100, 5)
     love.graphics.print({black, "Vitesse cube10 : ",cube10.v}, 100, 20)
+    love.graphics.print({black, "Masse cube100 : ",cube100.m}, 100, 35)
+    love.graphics.print({black, "Puissance de 100 : ",power100}, 100, 50)
 
-    love.graphics.print({black, "pi : ",pi}, 500, 20)
 
-    if collide == true then
-        love.graphics.print({black, "collision avec le mur"}, 300, 5)
-    elseif collideCube == true then
-        love.graphics.print({black, "collision entre cube"}, 300, 20)
-    end
+
+    love.graphics.print({black, "pi : ",pi}, 200, 500)
+
 end
+
+ 
