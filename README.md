@@ -1,4 +1,10 @@
 # pi-collision
+This program has been made in lua with the framework Love2D. It computes pi decimals with the collision of 2 cubes.
+Watch this video to understand :
+https://youtu.be/HEfHFsfGXjs
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Petit programme en lua et Love2D qui compte les décimales de pi avec les collisions de 2 cubes. 
 Totalement inspiré par cette vidéo : 
 https://youtu.be/HEfHFsfGXjs
